@@ -11,3 +11,17 @@ Stripe
 https://docs.stripe.com/api
 https://docs.stripe.com/libraries
 ```
+
+Hookdeck (instalar CLI)
+```
+https://hookdeck.com/
+```
+
+
+### Probando entorno local con hookdeck
+
+
+```
+hookdeck login
+hookdeck listen 3003 stripe-to-localhost
+```
