@@ -29,8 +29,8 @@ export class PaymentsService {
             },
             line_items: lineItems,
             mode: 'payment',
-            success_url: envs.SUCCESS_URL,
-            cancel_url: envs.CANCEL_URL,
+            success_url: envs.STRIPE_SUCCESS_URL,
+            cancel_url: envs.STRIPE_CANCEL_URL,
         });
 
         return session;
