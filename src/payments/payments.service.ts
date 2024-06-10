@@ -1,12 +1,17 @@
-import { Injectable } from '@nestjs/common';
+import { Inject, Injectable, Logger } from '@nestjs/common';
 import { envs } from 'src/config';
 import Stripe from 'stripe';
 import { PaymentSessionDto } from './dto/payment-session.dto';
 import { Request, Response } from 'express';
+import { NATS_SERVICE } from '../config/services';
+import { ClientProxy } from '@nestjs/microservices';
 
 @Injectable()
 export class PaymentsService {
     private readonly stripe = new Stripe(envs.STRIPE_SECRET_KEY);
+    private readonly logger = new Logger(PaymentsService.name);
+
+    constructor(@Inject(NATS_SERVICE)private readonly client: ClientProxy) {}
 
     async createPaymentSession(paymentSessionDto: PaymentSessionDto) {
         const { currency, items, orderId } = paymentSessionDto;
@@ -57,8 +62,15 @@ export class PaymentsService {
         switch(event.type) {
             case 'charge.succeeded':
                 const charge = event.data.object;
-                // TODO: llamar a nuestro microservicio
-                console.log({ metadata: charge.metadata});
+                const payload = {
+                    stripePaymentId: charge.id,
+                    orderId: charge.metadata.orderId,
+                    receiptUrl : charge.receipt_url
+                };
+                
+                // Since we don't need to wait for the response here.
+                // we can just emit payment succeeded event to orders microservice via NATS
+                this.client.emit('payment.succeeded', payload);
                 break;
             break;
             default:
