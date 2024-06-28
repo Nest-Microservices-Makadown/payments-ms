@@ -30,8 +30,7 @@ async function bootstrap() {
   await app.startAllMicroservices();
   await app.listen(envs.PORT);
 
-
-  logger.log(`Application is running on: ${await app.getUrl()}`);
-  logger.log(`Hybrid mode for NATS server(s) available: [${envs.NATS_SERVERS}]`);
+  logger.log('Health check ready');
+  logger.log(`Payments Service running on: ${await app.getUrl()}`);
 }
 bootstrap();
